@@ -13,6 +13,8 @@ export function Header() {
   const [programsOpen, setProgramsOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const drawer = useRef<HTMLDivElement>(null);
+  const programsTrigger = useRef<HTMLButtonElement>(null);
+  const programsMenu = useRef<HTMLDivElement>(null);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     if (open) drawer.current?.querySelector<HTMLElement>("button")?.focus();
@@ -21,6 +23,7 @@ export function Header() {
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape" && open) { setOpen(false); trigger.current?.focus(); }
+      else if (e.key === "Escape" && programsOpen) { setProgramsOpen(false); programsTrigger.current?.focus(); }
       if (e.key === "Tab" && open && drawer.current) {
         const focusable = Array.from(drawer.current.querySelectorAll<HTMLElement>('a[href], button, summary, input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el => !el.hasAttribute("disabled"));
         const first = focusable[0]; const last = focusable[focusable.length - 1];
@@ -29,15 +32,23 @@ export function Header() {
       }
     };
     document.addEventListener("keydown", key); return () => document.removeEventListener("keydown", key);
-  }, [open]);
+  }, [open, programsOpen]);
+  useEffect(() => {
+    if (!programsOpen) return;
+    const outside = (event: PointerEvent) => {
+      if (!programsMenu.current?.contains(event.target as Node)) setProgramsOpen(false);
+    };
+    document.addEventListener("pointerdown", outside);
+    return () => document.removeEventListener("pointerdown", outside);
+  }, [programsOpen]);
   const close = () => { setOpen(false); requestAnimationFrame(() => trigger.current?.focus()); };
   return <>
     <a className="skip-link" href="#main">Skip to main content</a>
     <header className="site-header"><div className="header-inner"><Logo/>
-      <nav className="desktop-nav" aria-label="Primary navigation">{nav.map(item => item.label === "Programs" ? <div className="menu-group" key={item.label}><button aria-expanded={programsOpen} onClick={() => setProgramsOpen(v => !v)}>Programs <ChevronDown/></button>{programsOpen && <div className="mega-menu"><div><p className="eyebrow">Program portfolio</p><h2>From first questions to future skills.</h2><p>Explore practical interventions for learning spaces, teachers and communities.</p><Link className="text-link" href="/programs" onClick={() => setProgramsOpen(false)}>View all programs <ArrowRight/></Link></div><div className="mega-links">{programs.map(p => <Link key={p.slug} href={`/programs/${p.slug}`} onClick={() => setProgramsOpen(false)}><span>{p.name}</span><small>{p.eyebrow}</small></Link>)}</div></div>}</div> : <Link key={item.label} href={item.href}>{item.label}</Link>)}</nav>
-      <div className="header-actions"><Link className="button button-primary compact-partner" href="/contact?interest=partnership">Partner with us <ArrowRight/></Link><button ref={trigger} className="menu-trigger" onClick={() => setOpen(true)} aria-label="Open navigation menu" aria-expanded={open}><MenuIcon/></button></div>
+      <nav className="desktop-nav" aria-label="Primary navigation">{nav.map(item => item.label === "Programs" ? <div className="menu-group" key={item.label} ref={programsMenu}><button ref={programsTrigger} aria-expanded={programsOpen} aria-haspopup="true" aria-controls="programs-menu" onClick={() => setProgramsOpen(v => !v)}>Programs <ChevronDown/></button>{programsOpen && <div className="mega-menu" id="programs-menu"><div><p className="eyebrow">Program portfolio</p><h2>From first questions to future skills.</h2><p>Explore practical interventions for learning spaces, teachers and communities.</p><Link className="text-link" href="/programs" onClick={() => setProgramsOpen(false)}>View all programs <ArrowRight/></Link></div><div className="mega-links">{programs.map(p => <Link key={p.slug} href={`/programs/${p.slug}`} onClick={() => setProgramsOpen(false)}><span>{p.name}</span><small>{p.eyebrow}</small></Link>)}</div></div>}</div> : <Link key={item.label} href={item.href}>{item.label}</Link>)}</nav>
+      <div className="header-actions"><Link className="button button-primary compact-partner" href="/contact?interest=partnership" aria-label="Partner with us"><span className="partner-label-full">Partner with us</span><span className="partner-label-short" aria-hidden="true">Partner</span><ArrowRight/></Link><button ref={trigger} className="menu-trigger" onClick={() => setOpen(true)} aria-label="Open navigation menu" aria-expanded={open}><MenuIcon/></button></div>
     </div></header>
-    <div className={`drawer-backdrop ${open ? "is-open" : ""}`} onMouseDown={(e) => { if (e.currentTarget === e.target) close(); }} aria-hidden={!open}>
+    <div className={`drawer-backdrop ${open ? "is-open" : ""}`} onMouseDown={(e) => { if (e.currentTarget === e.target) close(); }} aria-hidden={!open} inert={!open}>
       <div className="mobile-drawer" ref={drawer} role="dialog" aria-modal="true" aria-label="Navigation menu"><div className="drawer-top"><Logo/><button className="icon-button" onClick={close} aria-label="Close navigation menu"><CloseIcon/></button></div><Link className="button button-primary drawer-partner" href="/contact?interest=partnership" onClick={close}>Partner with us <ArrowRight/></Link><nav aria-label="Mobile navigation"><details><summary>Programs <ChevronDown/></summary><div>{programs.map(p => <Link key={p.slug} href={`/programs/${p.slug}`} onClick={close}>{p.name}</Link>)}</div></details>{nav.filter(n => n.label !== "Programs").map(n => <Link key={n.label} href={n.href} onClick={close}>{n.label}</Link>)}</nav><p className="drawer-note">Practical STEM education, designed around real school contexts.</p></div>
     </div>
   </>;

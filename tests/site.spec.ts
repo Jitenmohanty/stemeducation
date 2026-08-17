@@ -13,14 +13,28 @@ test("all routes render one H1 without horizontal overflow", async ({ page }) =>
 });
 
 test("mobile navigation closes with Escape and restores focus", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  for (const width of [360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    const trigger = page.getByRole("button", { name: "Open navigation menu" });
+    await trigger.click();
+    await expect(page.getByRole("dialog", { name: "Navigation menu" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Partner with us" }).last()).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog", { name: "Navigation menu" })).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    expect(overflow, `${width}px navigation overflow`).toBe(false);
+  }
+});
+
+test("partnership pathways expose three clear starting points", async ({ page }) => {
   await page.goto("/");
-  const trigger = page.getByRole("button", { name: "Open navigation menu" });
-  await trigger.click();
-  await expect(page.getByRole("dialog", { name: "Navigation menu" })).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog", { name: "Navigation menu" })).not.toBeVisible();
-  await expect(trigger).toBeFocused();
+  const section = page.getByRole("region", { name: "Start with your partnership context." });
+  await expect(section.getByRole("heading", { level: 3 })).toHaveCount(3);
+  await expect(section.getByRole("link", { name: "Plan a CSR partnership" })).toBeVisible();
+  await expect(section.getByRole("link", { name: "Explore school programs" })).toBeVisible();
+  await expect(section.getByRole("link", { name: "Discuss implementation" })).toBeVisible();
 });
 
 test("program filter works", async ({ page }) => {
