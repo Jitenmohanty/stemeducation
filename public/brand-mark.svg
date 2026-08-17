@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
+  <title id="title">STEM Education India symbol</title>
+  <rect width="48" height="48" rx="14" fill="#0F172A"/>
+  <path d="M14 24h20M24 14v20" stroke="#7DD3FC" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="14" cy="24" r="4" fill="#FBBF24"/>
+  <circle cx="34" cy="24" r="4" fill="#38BDF8"/>
+  <circle cx="24" cy="14" r="4" fill="#FB7185"/>
+  <circle cx="24" cy="34" r="4" fill="#4ADE80"/>
+</svg>

@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+import { cases } from "@/lib/content";
+import { Container, CTABand, PageHero, StatusBadge } from "@/components/ui";
+export const metadata:Metadata={title:"Case studies",description:"Explore evidence-aware STEM education case study frameworks and approved stories.",alternates:{canonical:"/resources/case-studies"}};
+export default function CaseStudies(){return <><PageHero eyebrow="Case studies" title="Stories structured for learning, not just promotion." body="Every published story will distinguish context, intervention, reach, evidence and what can reasonably be concluded."/><section className="section"><Container><div className="case-list">{cases.map((c,i)=><article key={c.title}><div><span>Case framework {String(i+1).padStart(2,"0")}</span><StatusBadge/></div><h2>{c.title}</h2><dl><div><dt>Location</dt><dd>{c.location}</dd></div><div><dt>Challenge</dt><dd>{c.challenge}</dd></div><div><dt>Intervention</dt><dd>{c.intervention}</dd></div><div><dt>Outcome</dt><dd>{c.outcome}</dd></div></dl></article>)}</div></Container></section><CTABand title="Have a challenge worth solving together?"/></>}

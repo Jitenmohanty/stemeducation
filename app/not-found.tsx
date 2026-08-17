@@ -1,0 +1,2 @@
+import { ButtonLink, Container } from "@/components/ui";
+export default function NotFound(){return <section className="not-found"><Container><span>404</span><p className="eyebrow">Page not found</p><h1>This path did not lead to a classroom.</h1><p>The page may have moved, or the link may be incomplete.</p><div className="hero-actions"><ButtonLink href="/">Return home</ButtonLink><ButtonLink href="/programs" kind="secondary">Explore programs</ButtonLink></div></Container></section>}

@@ -1,0 +1,5 @@
+"use client";
+import { useState } from "react";
+import { Search } from "@/components/icons";
+import { StatusBadge } from "@/components/ui";
+export function PresenceDirectory({regions}:{regions:{name:string;states:string;programs:string}[]}){const[q,setQ]=useState("");const shown=regions.filter(r=>r.name.toLowerCase().includes(q.toLowerCase()));return <><label className="search-field"><Search/><span className="sr-only">Search by region or state</span><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search by region (state data pending)"/></label><p className="results-status" aria-live="polite">{shown.length} region{shown.length!==1?"s":""}</p><div className="region-cards">{shown.map((r,i)=><article key={r.name} id={`region-${i+1}`}><div><span>Region {String(i+1).padStart(2,"0")}</span><StatusBadge/></div><h2>{r.name}</h2><p>{r.states}</p><hr/><strong>Program availability</strong><p>{r.programs}</p></article>)}</div>{shown.length===0&&<div className="empty-state"><h2>No matching verified region</h2><p>Try another search or contact the team to discuss your location.</p></div>}</>}
